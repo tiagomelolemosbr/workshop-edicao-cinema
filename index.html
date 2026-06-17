@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workshop · Edição de Cinema</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2308283D'/><text x='50%' y='53%' dominant-baseline='central' text-anchor='middle' font-family='Georgia,serif' font-size='13' fill='%23EFE4D2' font-style='italic' letter-spacing='1'>FP</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IM+Fell+English:ital@0;1&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Paleta oficial Felipe Pick — brandbook 2024 */
+      --pelicula:    #EFE4D2;
+      --marinho:     #08283D;
+      --ardosia:     #314A59;
+      --marrom:      #663613;
+      --creme-meio:  #CBBFA8;
+
+      --font-display: 'Cormorant Garamond', serif;
+      --font-quote:   'IM Fell English', serif;
+      --font-body:    'Jost', sans-serif;
+    }
+
+    html, body {
+      background: var(--pelicula);
+      color: var(--marinho);
+      font-family: var(--font-body);
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── PAGE SHELL ─────────────────────────────────────── */
+    .page {
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--pelicula);
+      min-height: 100vh;
+    }
+
+    /* ─── UTILITIES ──────────────────────────────────────── */
+    .rule {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .rule::before,
+    .rule::after {
+      content: '';
+      flex: 1;
+      height: 0.5px;
+      background: var(--creme-meio);
+    }
+    .rule-dot {
+      width: 3px;
+      height: 3px;
+      background: var(--ardosia);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .btn-primary {
+      display: block;
+      width: 100%;
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      background: var(--marrom);
+      color: var(--pelicula);
+      border: none;
+      padding: 14px 28px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .btn-outline {
+      display: block;
+      width: 100%;
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      background: transparent;
+      color: var(--marinho);
+      border: 0.5px solid var(--marinho);
+      padding: 13px 28px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    /* ─── FOLD 1 · SLIDESHOW HERO ───────────────────────── */
+    .fold-hero {
+      position: relative;
+    }
+
+    .hero-slideshow {
+      position: relative;
+      width: 100%;
+      height: 64vh;
+      min-height: 380px;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 35%;
+      display: block;
+    }
+
+    /* posição individual por foto */
+    .slide:nth-child(1) img { object-position: center 50%; } /* Fiat vermelho */
+    .slide:nth-child(2) img { object-position: center 25%; } /* Alfama díptico */
+    .slide:nth-child(3) img { object-position: center 30%; } /* Escadaria */
+
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(8, 40, 61, 0.00)  0%,
+        rgba(8, 40, 61, 0.05) 30%,
+        rgba(8, 40, 61, 0.60) 72%,
+        rgba(8, 40, 61, 0.90) 100%
+      );
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 28px 22px;
+      z-index: 2;
+    }
+
+    .hero-label {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(239, 228, 210, 0.90);
+      display: inline-block;
+      margin-bottom: 12px;
+      background: rgba(102, 54, 19, 0.32);
+      padding: 7px 12px;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-style: italic;
+      font-size: 34px;
+      line-height: 1.1;
+      color: var(--pelicula);
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── DOTS ───────────────────────────────────────────── */
+    .slide-dots {
+      position: absolute;
+      bottom: 16px;
+      right: 28px;
+      display: flex;
+      gap: 7px;
+      z-index: 3;
+    }
+
+    .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(239, 228, 210, 0.30);
+      transition: background 0.4s;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+    }
+
+    .dot.active {
+      background: var(--pelicula);
+    }
+
+    /* ─── FOLD 1 · CONTENT ───────────────────────────────── */
+    .fold-hero-body {
+      padding: 24px 28px 40px;
+      background: var(--pelicula);
+    }
+
+    .hero-info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      margin-bottom: 20px;
+    }
+
+    .hero-sub {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 17px;
+      line-height: 1.48;
+      color: var(--marinho);
+      flex: 1;
+      padding-right: 16px;
+    }
+
+    .hero-info-divider {
+      width: 0.5px;
+      background: var(--creme-meio);
+      align-self: stretch;
+      flex-shrink: 0;
+    }
+
+    .hero-meta {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 8.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ardosia);
+      line-height: 2;
+      flex: 1;
+      padding-left: 16px;
+    }
+
+    /* ─── END FOLD 1 ─────────────────────────────────────── */
+
+    /* ─── FOLD 2 · PAIN POINTS ──────────────────────────── */
+    .fold-pain {
+      background: var(--marinho);
+      padding: 48px 28px 52px;
+    }
+
+    .fold-pain .section-label {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 8px;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: rgba(239, 228, 210, 0.40);
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    .fold-pain .section-title {
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-style: italic;
+      font-size: 28px;
+      line-height: 1.15;
+      color: var(--pelicula);
+      margin-bottom: 32px;
+    }
+
+    .pain-list {
+      list-style: none;
+      margin-bottom: 36px;
+    }
+
+    .pain-list li {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 13px;
+      line-height: 1.7;
+      color: rgba(239, 228, 210, 0.75);
+      padding: 14px 0;
+      border-bottom: 0.5px solid rgba(239, 228, 210, 0.10);
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .pain-list li strong {
+      font-weight: 600;
+      color: var(--pelicula);
+    }
+
+    .pain-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--marrom);
+    }
+
+    .pain-list li:first-child {
+      border-top: 0.5px solid rgba(239, 228, 210, 0.10);
+    }
+
+    .fold-pain .section-close {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--pelicula);
+    }
+
+    /* ─── FOLD 2.5 · GALERIA ────────────────────────────── */
+    .fold-gallery {
+      background: var(--marinho);
+      padding: 40px 0;
+      overflow: hidden;
+    }
+
+    @keyframes gallery-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-1740px); }
+    }
+
+    .gallery-track {
+      display: flex;
+      gap: 4px;
+      width: max-content;
+      animation: gallery-scroll 42s linear infinite;
+    }
+
+    .gallery-track:hover {
+      animation-play-state: paused;
+    }
+
+    .gallery-item {
+      flex-shrink: 0;
+      width: 170px;
+      height: 226px;
+      overflow: hidden;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+    }
+
+    /* zoom pra esconder bordas brancas */
+    .gallery-item.has-border img   { transform: scale(1.18); }
+    .gallery-item.has-letterbox img { transform: scale(1.35); }
+
+    /* ─── FOLD 3 · RESULTADOS ───────────────────────────── */
+    .fold-results {
+      background: var(--pelicula);
+      padding: 48px 28px 52px;
+    }
+
+    .fold-results .section-label {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 8px;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--ardosia);
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    .fold-results .section-title {
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-style: italic;
+      font-size: 26px;
+      line-height: 1.18;
+      color: var(--marinho);
+      margin-bottom: 36px;
+    }
+
+    .results-list {
+      list-style: none;
+    }
+
+    .results-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 15px 0;
+      border-bottom: 0.5px solid var(--creme-meio);
+    }
+
+    .results-list li:first-child {
+      border-top: 0.5px solid var(--creme-meio);
+    }
+
+    .results-num {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 22px;
+      color: var(--marrom);
+      line-height: 1;
+      min-width: 20px;
+      padding-top: 2px;
+    }
+
+    .results-text {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--ardosia);
+    }
+
+    .results-text strong {
+      font-weight: 600;
+      color: var(--marinho);
+    }
+
+    /* ─── FOLD 4 · QUEM SOU EU ──────────────────────────── */
+    .fold-about {
+      background: var(--marinho);
+      padding-bottom: 52px;
+    }
+
+    .about-photo {
+      width: 100%;
+      height: 56vh;
+      min-height: 340px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .about-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 15%;
+      display: block;
+      filter: grayscale(100%);
+    }
+
+    .about-photo-fade {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60%;
+      background: linear-gradient(
+        180deg,
+        rgba(8, 40, 61, 0.00) 0%,
+        rgba(8, 40, 61, 1.00) 100%
+      );
+    }
+
+    .about-body {
+      padding: 0 28px;
+    }
+
+    .about-name {
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(239, 228, 210, 0.45);
+      display: block;
+      margin-bottom: 24px;
+    }
+
+    .fold-about .section-label {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 8px;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: rgba(239, 228, 210, 0.40);
+      display: block;
+      margin-bottom: 20px;
+      padding-top: 36px;
+    }
+
+    .about-bio {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 13px;
+      line-height: 1.9;
+      color: rgba(239, 228, 210, 0.70);
+      margin-bottom: 16px;
+    }
+
+    .about-pull {
+      border-left: 1.5px solid var(--marrom);
+      padding: 10px 16px;
+      font-family: var(--font-quote);
+      font-style: italic;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--pelicula);
+      margin: 28px 0;
+    }
+
+    .about-close {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 13px;
+      line-height: 1.9;
+      color: rgba(239, 228, 210, 0.70);
+    }
+
+    /* ─── FOLD 5 · CTA / PREÇO ──────────────────────────── */
+    .fold-cta {
+      background: var(--pelicula);
+      padding: 48px 28px 56px;
+    }
+
+    .fold-cta .section-label {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 26px;
+      letter-spacing: 0.02em;
+      color: var(--pelicula);
+      display: inline-block;
+      margin-bottom: 28px;
+      text-align: center;
+      width: 100%;
+      background: var(--marrom);
+      padding: 10px 20px;
+    }
+
+    .cta-includes {
+      list-style: none;
+      margin-bottom: 40px;
+    }
+
+    .cta-includes li {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--ardosia);
+      padding: 14px 0;
+      padding-left: 16px;
+      position: relative;
+      border-bottom: 0.5px solid var(--creme-meio);
+    }
+
+    .cta-includes li:first-child {
+      border-top: 0.5px solid var(--creme-meio);
+    }
+
+    .cta-includes li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--marrom);
+    }
+
+    .cta-card {
+      border: 0.5px solid var(--creme-meio);
+      padding: 28px 24px 24px;
+      text-align: center;
+    }
+
+    .cta-price-label {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 8.5px;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--ardosia);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .cta-price {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 56px;
+      line-height: 1;
+      color: var(--marinho);
+      display: block;
+      margin-bottom: 24px;
+    }
+
+    .cta-meta {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 8.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ardosia);
+      text-align: center;
+      margin-top: 14px;
+      line-height: 2.2;
+    }
+
+    /* ─── FOLD 6 · FECHAMENTO ────────────────────────────── */
+    .fold-close {
+      background: var(--marinho);
+      padding: 52px 28px 60px;
+    }
+
+    .fold-close .close-headline {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 24px;
+      line-height: 1.35;
+      color: var(--pelicula);
+      margin-bottom: 28px;
+    }
+
+    .fold-close .close-body {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 13px;
+      line-height: 1.9;
+      color: rgba(239, 228, 210, 0.65);
+      margin-bottom: 36px;
+    }
+
+  /* ═══════════════════════════════════════════════════════
+     DESKTOP  ≥ 900px
+  ══════════════════════════════════════════════════════ */
+  @media (min-width: 900px) {
+
+    .page { max-width: 100%; }
+
+    /* ── FOLD 1 · HERO ── */
+    .hero-slideshow {
+      height: 100vh;
+      min-height: 600px;
+    }
+
+    .hero-overlay {
+      padding: 0 80px 72px;
+    }
+
+    .hero-label {
+      font-size: 13px;
+      padding: 8px 14px;
+    }
+
+    .hero-title {
+      font-size: 64px;
+      max-width: 700px;
+    }
+
+    .slide-dots {
+      right: 80px;
+      bottom: 28px;
+    }
+
+    .fold-hero-body {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 44px 80px 60px;
+      display: flex;
+      align-items: center;
+      gap: 64px;
+    }
+
+    .hero-info-row {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .hero-sub { font-size: 20px; }
+
+    .hero-info-divider { display: block; }
+
+    .hero-cta-wrap {
+      width: 260px;
+      flex-shrink: 0;
+    }
+
+    .hero-cta-wrap .rule {
+      margin-bottom: 20px;
+    }
+
+    /* ── FOLD 2 · PAIN POINTS ── */
+    .fold-pain {
+      padding: 80px 0;
+    }
+
+    .fold-pain .section-label,
+    .fold-pain .section-title,
+    .pain-list,
+    .fold-pain .section-close {
+      max-width: 860px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 80px;
+      padding-right: 80px;
+    }
+
+    .fold-pain .section-label { display: block; }
+    .fold-pain .section-title { font-size: 36px; }
+    .fold-pain .section-close { font-size: 20px; display: block; }
+
+    /* ── FOLD 2.5 · GALLERY ── */
+    @keyframes gallery-scroll-desktop {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-2244px); }
+    }
+
+    .gallery-track {
+      animation-name: gallery-scroll-desktop;
+      animation-duration: 48s;
+    }
+
+    .gallery-item {
+      width: 220px;
+      height: 300px;
+    }
+
+    /* ── FOLD 3 · RESULTS ── */
+    .fold-results {
+      padding: 80px 0;
+    }
+
+    .fold-results .section-label,
+    .fold-results .section-title {
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 80px;
+      padding-right: 80px;
+      display: block;
+    }
+
+    .fold-results .section-title { font-size: 36px; }
+
+    .results-list {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 48px;
+    }
+
+    .results-list li:nth-child(1),
+    .results-list li:nth-child(3),
+    .results-list li:nth-child(5) {
+      border-right: 0.5px solid var(--creme-meio);
+      padding-right: 48px;
+    }
+
+    /* ── FOLD 4 · ABOUT ── */
+    .fold-about {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .about-photo {
+      width: 42%;
+      height: auto;
+      min-height: 600px;
+      flex-shrink: 0;
+    }
+
+    .about-photo-fade {
+      background: linear-gradient(
+        90deg,
+        rgba(8, 40, 61, 0.00) 0%,
+        rgba(8, 40, 61, 0.00) 60%,
+        rgba(8, 40, 61, 1.00) 100%
+      );
+    }
+
+    .about-body {
+      flex: 1;
+      padding: 64px 80px 64px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .fold-about .section-label { padding-top: 0; }
+
+    .about-bio { font-size: 14px; }
+    .about-close { font-size: 14px; }
+
+    /* ── FOLD 5 · CTA ── */
+    .fold-cta {
+      padding: 80px 80px 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .fold-cta .section-label {
+      font-size: 30px;
+    }
+
+    .cta-includes {
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-card {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 36px 40px 32px;
+    }
+
+    .cta-price { font-size: 72px; }
+
+    /* ── FOLD 6 · CLOSE ── */
+    .fold-close {
+      padding: 80px 0;
+    }
+
+    .fold-close .close-headline,
+    .fold-close .close-body,
+    .fold-close .rule,
+    .fold-close .btn-primary {
+      max-width: 860px;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+      padding-left: 80px;
+      padding-right: 80px;
+    }
+
+    .fold-close .close-headline {
+      font-size: 32px;
+      margin-bottom: 32px;
+      box-sizing: border-box;
+    }
+
+    .fold-close .close-body {
+      font-size: 15px;
+      margin-bottom: 44px;
+      box-sizing: border-box;
+    }
+
+    .fold-close .rule {
+      margin-bottom: 32px;
+      padding-left: 80px;
+      padding-right: 80px;
+      box-sizing: border-box;
+    }
+
+    .fold-close .btn-primary {
+      max-width: 400px;
+      box-sizing: border-box;
+      padding-left: 28px;
+      padding-right: 28px;
+    }
+
+  }
+
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║  FOLD 1 · HERO                  ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <section class="fold-hero">
+
+    <div class="hero-slideshow" id="slideshow">
+
+      <div class="slide active">
+        <img
+          src="images/Foto%20Nova%206.jpg"
+          alt="Lisboa — Jerónimos"
+        >
+      </div>
+
+      <div class="slide">
+        <img
+          src="images/Foto%20Nova%207.jpg"
+          alt="Lisboa — Alfama"
+        >
+      </div>
+
+      <div class="slide">
+        <img
+          src="images/Foto%20Nova%203.jpg"
+          alt="Escadaria"
+        >
+      </div>
+
+      <div class="hero-vignette"></div>
+
+      <div class="hero-overlay">
+        <span class="hero-label">Workshop · Edição de Cinema</span>
+        <h1 class="hero-title">
+          Aprenda a transformar<br>
+          suas fotos em cenas<br>
+          de filme, através<br>
+          da edição.
+        </h1>
+      </div>
+
+      <div class="slide-dots" id="dots">
+        <button class="dot active" data-index="0" aria-label="Foto 1"></button>
+        <button class="dot" data-index="1" aria-label="Foto 2"></button>
+        <button class="dot" data-index="2" aria-label="Foto 3"></button>
+      </div>
+
+    </div>
+
+    <div class="fold-hero-body">
+
+      <div class="hero-info-row">
+        <p class="hero-sub">Uma tarde de teoria, prática e edição ao vivo comigo.</p>
+        <div class="hero-info-divider"></div>
+        <p class="hero-meta">Workshop ao vivo · Sexta-feira, 10/07 · das 14h às 18h</p>
+      </div>
+
+      <div class="hero-cta-wrap">
+        <div class="rule" style="margin-bottom: 20px;">
+          <div class="rule-dot"></div>
+        </div>
+        <a href="#inscricao" class="btn-primary">
+          Garantir minha vaga por R$48
+        </a>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║  FOLD 2 · PAIN POINTS           ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <section class="fold-pain">
+
+    <span class="section-label">Você se reconhece?</span>
+
+    <h2 class="section-title">Você se reconhece<br>em alguma dessas?</h2>
+
+    <ul class="pain-list">
+      <li>Você não tem uma edição que olha e fala <strong>"isso é a minha cara"</strong></li>
+      <li>A edição de <strong>cada ensaio sai de um jeito</strong></li>
+      <li>Sua edição parece genérica, igual à de vários outros fotógrafos</li>
+      <li>Você demora horas editando e ainda não fica satisfeito com o resultado</li>
+      <li>Você sente vergonha de mostrar o portfólio sem filtrar antes o que vai aparecer</li>
+      <li>Você quer uma <strong>identidade visual</strong> que as pessoas <strong>reconheçam como sua</strong> antes mesmo de ver seu nome</li>
+    </ul>
+
+    <p class="section-close">
+      Se pelo menos uma dessas situações soa familiar, esse workshop foi feito pra você.
+    </p>
+
+  </section>
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║  FOLD 2.5 · GALERIA             ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <section class="fold-gallery">
+    <div class="gallery-track">
+
+      <!-- set 1 -->
+      <div class="gallery-item">
+        <img src="images/Foto%20Nova%205.jpg" alt="">
+      </div>
+      <div class="gallery-item has-border">
+        <img src="images/Ensaio%20Pick%204.jpg" alt="">
+      </div>
+      <div class="gallery-item">
+        <img src="images/Foto%20Nova%208.jpg" alt="">
+      </div>
+      <div class="gallery-item has-border">
+        <img src="images/Ensaio%20Pick%201.jpg" alt="">
+      </div>
+      <div class="gallery-item">
+        <img src="images/Foto%20Nova%203.jpg" alt="">
+      </div>
+      <div class="gallery-item has-border">
+        <img src="images/Ensaio%20Pick%203.jpg" alt="">
+      </div>
+      <div class="gallery-item">
+        <img src="images/Foto%20Nova%206.jpg" alt="">
+      </div>
+      <div class="gallery-item has-border">
+        <img src="images/Ensaio%20Pick%202.jpg" alt="">
+      </div>
+      <div class="gallery-item has-letterbox">
+        <img src="images/Foto%20Nova%201.jpg" alt="" style="object-position: center 35%;">
+      </div>
+      <div class="gallery-item">
+        <img src="images/Ensaio%20Pick%205.jpg" alt="">
+      </div>
+
+      <!-- set 2 — duplicate para loop contínuo -->
+      <div class="gallery-item">
+        <img src="images/Foto%20Nova%205.jpg" alt="">
+      </div>
+      <div class="gallery-item has-border">
+        <img src="images/Ensaio%20Pick%204.jpg" alt="">
+      </div>
+      <div class="gallery-item">
+        <img src="images/Foto%20Nova%208.jpg" alt="">
+      </div>
+      <div class="gallery-item has-border">
+        <img src="images/Ensaio%20Pick%201.jpg" alt="">
+      </div>
+      <div class="gallery-item">
+        <img src="images/Foto%20Nova%203.jpg" alt="">
+      </div>
+      <div class="gallery-item has-border">
+        <img src="images/Ensaio%20Pick%203.jpg" alt="">
+      </div>
+      <div class="gallery-item">
+        <img src="images/Foto%20Nova%206.jpg" alt="">
+      </div>
+      <div class="gallery-item has-border">
+        <img src="images/Ensaio%20Pick%202.jpg" alt="">
+      </div>
+      <div class="gallery-item has-letterbox">
+        <img src="images/Foto%20Nova%201.jpg" alt="" style="object-position: center 35%;">
+      </div>
+      <div class="gallery-item">
+        <img src="images/Ensaio%20Pick%205.jpg" alt="">
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║  FOLD 3 · RESULTADOS            ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <section class="fold-results">
+
+    <span class="section-label">O que você vai aprender</span>
+
+    <h2 class="section-title">O que você vai saber<br>fazer depois dessa tarde:</h2>
+
+    <ul class="results-list">
+      <li>
+        <span class="results-num">1</span>
+        <span class="results-text">Como criar uma <strong>identidade própria</strong> na edição e uma <strong>assinatura visual reconhecível</strong></span>
+      </li>
+      <li>
+        <span class="results-num">2</span>
+        <span class="results-text">Fazer colorização inspirada na <strong>linguagem cinematográfica</strong></span>
+      </li>
+      <li>
+        <span class="results-num">3</span>
+        <span class="results-text">Ajustar a luz com intenção, não por tentativa e erro</span>
+      </li>
+      <li>
+        <span class="results-num">4</span>
+        <span class="results-text">Elevar o tratamento de imagem ao nível profissional</span>
+      </li>
+      <li>
+        <span class="results-num">5</span>
+        <span class="results-text">Usar contraste para criar profundidade e atmosfera nas fotos</span>
+      </li>
+      <li>
+        <span class="results-num">6</span>
+        <span class="results-text">Aplicar efeitos que dão às imagens aquela <strong>sensação de cena de filme</strong></span>
+      </li>
+    </ul>
+
+  </section>
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║  FOLD 4 · QUEM SOU EU           ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <section class="fold-about">
+
+    <div class="about-photo">
+      <img
+        src="images/Foto%20Pick.jpg"
+        alt="Felipe Pick"
+      >
+      <div class="about-photo-fade"></div>
+    </div>
+
+    <div class="about-body">
+
+      <span class="section-label">Quem sou eu</span>
+
+      <span class="about-name">Felipe Pick · Fotógrafo</span>
+
+      <p class="about-bio">
+        Tenho 24 anos e sou fotógrafo especializado em ensaios de casal, família e casamentos com identidade cinematográfica.
+      </p>
+
+      <p class="about-bio">
+        Desde pequeno assistia até 3 filmes por dia. Quando comecei a fotografar, fui naturalmente levando as técnicas e a linguagem do cinema para os meus ensaios, até que as pessoas começaram a me perguntar como eu fazia pra que minhas fotos parecessem cenas de filme.
+      </p>
+
+      <p class="about-bio">
+        A edição sempre foi a parte central dessa resposta.
+      </p>
+
+      <p class="about-close">
+        Nessa tarde do dia 10/07, vou te mostrar exatamente como isso funciona, do zero até a imagem finalizada.
+      </p>
+
+    </div>
+
+  </section>
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║  FOLD 5 · CTA / PREÇO           ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <section class="fold-cta" id="inscricao">
+
+    <span class="section-label">O que você recebe</span>
+
+    <ul class="cta-includes">
+      <li>4 horas de workshop ao vivo com edição de fotos em tempo real</li>
+      <li>Teoria e prática de colorização, luz, contraste e efeitos cinematográficos</li>
+    </ul>
+
+    <div class="cta-card">
+      <span class="cta-price-label">Por apenas</span>
+      <span class="cta-price">R$48</span>
+      <a href="#" class="btn-primary">Quero garantir minha vaga</a>
+      <p class="cta-meta">Workshop ao vivo · Sexta, 10/07<br>14h às 18h</p>
+    </div>
+
+  </section>
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║  FOLD 6 · FECHAMENTO            ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <section class="fold-close">
+
+    <p class="close-headline">
+      Você chegou até aqui porque sente que sua edição ainda não te representa de verdade e isso atrapalha seus resultados na fotografia.
+    </p>
+
+    <div class="rule" style="margin-bottom: 28px;">
+      <div class="rule-dot" style="background: rgba(239,228,210,0.4);"></div>
+    </div>
+
+    <p class="close-body">
+      Não tem atalho nisso. O que existe é entender a lógica por trás de cada decisão de edição. É exatamente isso que você vai aprender nessa tarde.
+    </p>
+
+    <a href="#inscricao" class="btn-primary">Garantir minha vaga por R$48</a>
+
+  </section>
+
+</div>
+
+<script>
+  const slides  = document.querySelectorAll('#slideshow .slide');
+  const dots    = document.querySelectorAll('#dots .dot');
+  let current   = 0;
+  let timer;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  function next() {
+    goTo((current + 1) % slides.length);
+  }
+
+  function restart() {
+    clearInterval(timer);
+    timer = setInterval(next, 4500);
+  }
+
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      goTo(+dot.dataset.index);
+      restart();
+    });
+  });
+
+  restart();
+</script>
+
+</body>
+</html>
