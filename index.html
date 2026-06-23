@@ -269,6 +269,71 @@
       padding-left: 16px;
     }
 
+    .hero-meta-date {
+      display: block;
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-style: italic;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: var(--marinho);
+      line-height: 1.2;
+      margin: 3px 0 2px;
+    }
+
+    /* ─── GADGETS ────────────────────────────────────────── */
+    .hero-gadgets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .gadget {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 9.5px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(239, 228, 210, 0.85);
+      background: var(--marinho);
+      border: 0.5px solid rgba(239, 228, 210, 0.12);
+      border-radius: 100px;
+      padding: 8px 14px;
+      white-space: nowrap;
+    }
+
+    .gadget::before {
+      content: '';
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--creme-meio);
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    /* data em destaque — largura total, cor diferente */
+    .gadget:first-child {
+      width: 100%;
+      background: var(--ardosia);
+      border-color: transparent;
+      color: var(--pelicula);
+      font-size: 10.5px;
+      letter-spacing: 0.14em;
+      padding: 10px 16px;
+    }
+
+    .gadget:first-child::before {
+      background: var(--pelicula);
+      opacity: 0.6;
+      width: 4px;
+      height: 4px;
+    }
+
     /* ─── END FOLD 1 ─────────────────────────────────────── */
 
     /* ─── FOLD 2 · PAIN POINTS ──────────────────────────── */
@@ -352,6 +417,16 @@
       overflow: hidden;
     }
 
+    .gallery-intro {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 20px;
+      color: var(--pelicula);
+      text-align: center;
+      padding: 0 28px 28px;
+    }
+
     @keyframes gallery-scroll {
       0%   { transform: translateX(0); }
       100% { transform: translateX(-1740px); }
@@ -386,6 +461,11 @@
     /* zoom pra esconder bordas brancas */
     .gallery-item.has-border img   { transform: scale(1.18); }
     .gallery-item.has-letterbox img { transform: scale(1.35); }
+
+    .gallery-cta-wrap {
+      padding: 28px 28px;
+      background: var(--pelicula);
+    }
 
     /* ─── FOLD 3 · RESULTADOS ───────────────────────────── */
     .fold-results {
@@ -936,10 +1016,10 @@
       <div class="hero-overlay">
         <span class="hero-label">Workshop · Edição de Cinema</span>
         <h1 class="hero-title">
-          Aprenda a transformar<br>
-          suas fotos em cenas<br>
-          de filme, através<br>
-          da edição.
+          Aprenda a fazer uma<br>
+          Edição de Cinema<br>
+          no Lightroom com<br>
+          esse Workshop.
         </h1>
       </div>
 
@@ -954,9 +1034,12 @@
     <div class="fold-hero-body">
 
       <div class="hero-info-row">
-        <p class="hero-sub">Uma tarde de teoria, prática e edição ao vivo comigo.</p>
-        <div class="hero-info-divider"></div>
-        <p class="hero-meta">Workshop ao vivo · Sexta-feira, 10/07 · das 14h às 18h</p>
+        <div class="hero-gadgets">
+          <span class="gadget">Sexta-feira, 10/07 · 14h</span>
+          <span class="gadget">Gravação Disponível</span>
+          <span class="gadget">Desconto nos meus presets</span>
+          <span class="gadget">Tira-dúvidas ao final</span>
+        </div>
       </div>
 
       <div class="hero-cta-wrap">
@@ -973,33 +1056,10 @@
   </section>
 
   <!-- ╔══════════════════════════════════╗ -->
-  <!-- ║  FOLD 2 · PAIN POINTS           ║ -->
-  <!-- ╚══════════════════════════════════╝ -->
-  <section class="fold-pain">
-
-    <span class="section-label">Você se reconhece?</span>
-
-    <h2 class="section-title">Você se reconhece<br>em alguma dessas?</h2>
-
-    <ul class="pain-list">
-      <li>Você não tem uma edição que olha e fala <strong>"isso é a minha cara"</strong></li>
-      <li>A edição de <strong>cada ensaio sai de um jeito</strong></li>
-      <li>Sua edição parece genérica, igual à de vários outros fotógrafos</li>
-      <li>Você demora horas editando e ainda não fica satisfeito com o resultado</li>
-      <li>Você sente vergonha de mostrar o portfólio sem filtrar antes o que vai aparecer</li>
-      <li>Você quer uma <strong>identidade visual</strong> que as pessoas <strong>reconheçam como sua</strong> antes mesmo de ver seu nome</li>
-    </ul>
-
-    <p class="section-close">
-      Se pelo menos uma dessas situações soa familiar, esse workshop foi feito pra você.
-    </p>
-
-  </section>
-
-  <!-- ╔══════════════════════════════════╗ -->
   <!-- ║  FOLD 2.5 · GALERIA             ║ -->
   <!-- ╚══════════════════════════════════╝ -->
   <section class="fold-gallery">
+    <p class="gallery-intro">Você vai aprender a editar suas fotos assim:</p>
     <div class="gallery-track">
 
       <!-- set 1 -->
@@ -1068,6 +1128,12 @@
 
     </div>
   </section>
+
+  <div class="gallery-cta-wrap">
+    <a href="https://pay.hotmart.com/Q106361132E?checkoutMode=10" target="_blank" class="btn-primary">
+      Quero dominar a edição
+    </a>
+  </div>
 
   <!-- ╔══════════════════════════════════╗ -->
   <!-- ║  FOLD 3 · RESULTADOS            ║ -->
@@ -1164,27 +1230,6 @@
       <a href="https://pay.hotmart.com/Q106361132E?checkoutMode=10" target="_blank" rel="noopener" class="btn-primary">Quero garantir minha vaga</a>
       <p class="cta-meta">Workshop ao vivo · Sexta, 10/07<br>14h às 18h</p>
     </div>
-
-  </section>
-
-  <!-- ╔══════════════════════════════════╗ -->
-  <!-- ║  FOLD 6 · FECHAMENTO            ║ -->
-  <!-- ╚══════════════════════════════════╝ -->
-  <section class="fold-close">
-
-    <p class="close-headline">
-      Você chegou até aqui porque sente que sua edição ainda não te representa de verdade e isso atrapalha seus resultados na fotografia.
-    </p>
-
-    <div class="rule" style="margin-bottom: 28px;">
-      <div class="rule-dot" style="background: rgba(239,228,210,0.4);"></div>
-    </div>
-
-    <p class="close-body">
-      Não tem atalho nisso. O que existe é entender a lógica por trás de cada decisão de edição. É exatamente isso que você vai aprender nessa tarde.
-    </p>
-
-    <a href="https://pay.hotmart.com/Q106361132E?checkoutMode=10" target="_blank" rel="noopener" class="btn-primary">Garantir minha vaga por R$48</a>
 
   </section>
 
